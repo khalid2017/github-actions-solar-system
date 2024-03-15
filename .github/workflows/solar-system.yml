@@ -26,8 +26,18 @@ jobs:
         - name: Unit Testing
           run: npm test
           
-        - name: Archive Test Result
-          uses: actions/upload-artifact@v3
-          with:
-            name: Mocha-Test-Result
-            path: test-results.xml
+    dev-deploy:
+       needs: docker
+       runs-on: ubuntu-latest
+    environment:
+    name: development
+    steps:
+     - uses: actions/checkout@v4
+     - uses: azure/setup-kubectl@v3
+       with:
+         version: v1.26.0
+     - uses: azure/k8s-set-context@v3
+       with:
+           method: kubeconfig
+           kubeconfig: '${{ secrets.KUBECONFIG }}'
+     - run: kubectl version --short -o yaml
